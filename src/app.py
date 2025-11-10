@@ -1,5 +1,5 @@
 import streamlit as st
-from utils import calc_salary_deduction, determine_tax_rate, format_num
+from utils import floor_to_4000, calc_salary_deduction, determine_tax_rate, format_num
 
 # ページ設定
 st.set_page_config(page_title="ホーム", layout="wide")
@@ -16,7 +16,8 @@ if st.button("税率、税金の計算"):
     # 給与所得控除
     salary_deduction = calc_salary_deduction(salary)
     # 給与所得控除後の給与所得
-    salary_net = salary - salary_deduction
+    salary_r4 = floor_to_4000(salary)
+    salary_net = salary_r4 - salary_deduction
     # 全所得(控除後給与所得 + 雑所得)
     total_income = salary_net + misc_income
 

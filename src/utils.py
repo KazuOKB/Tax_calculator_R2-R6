@@ -1,13 +1,28 @@
+# From R2 to R6 of the Japanese income tax table
 
-def calc_salary_deduction(salary):
+# 丸め誤差処理
+def floor_to_4000(yen: int) -> int:
+    """4,000円刻みの切り捨て（整数演算のみでより安全）"""
+    return (yen // 4_000) * 4_000
+
+# 給与所得控除の計算 (丸め誤差対策済み)
+def calc_salary_deduction(salary:int) -> int:
+    """
+    給与所得控除額（令和2年から6年までの計算方法）
+    ・6,600,000円未満は「給与/4→千円未満切捨て→×4」を入れてから区分式に当てる
+    ・6,600,000円以上は1円未満切捨て（整数演算で自然に満たす）
+    出典：https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1410.htm
+    """
     if salary <= 1625000:
-        return 550000
+        return max(0, salary - 550000)
     elif salary <= 1800000:
         return salary * 0.4 - 100000
     elif salary <= 3600000:
-        return salary * 0.3 + 80000
+        salary_r4 = floor_to_4000(salary)
+        return salary_r4 * 0.3 + 80000
     elif salary <= 6600000:
-        return salary * 0.2 + 440000
+        salary_r4 = floor_to_4000(salary)
+        return salary_r4 * 0.2 + 440000
     elif salary <= 8500000:
         return salary * 0.1 + 1100000
     else:# max salary deduction
